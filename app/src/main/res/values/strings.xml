@@ -1,0 +1,30 @@
+<resources>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+    <string name="app_name">Reminder</string>
+    <string name="alarm_name">Alarm Name</string>
+    <string name="overview">Overview</string>
+    <string name="setDate">Set Date</string>
+    <string name="setTime">Set Time</string>
+    <string name="Time">Select Time</string>
+    <string name="Date">Select Date</string>
+    <string name="deleteAll">Delete All Reminders</string>
+    <string name="empty_view_title_text">It\'s a bit lonely here....</string>
+    <string name="empty_view_subtitle_text">Get started by adding a events</string>
+    <string name="editor_delete_Time_failed">Event failed to delete</string>
+    <string name="editor_delete_Time_successful">Event Successfully deleted</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="gedit_reminder">Edit Reminder</string>
+    <string name="no_changes_saved">Unable to save Changes</string>
+    <string name="discard">DISCARD</string>
+    <string name="keep_editing">KEEP EDITING</string>
+    <string name="unable_toSave_time">Unable to save Reminder</string>
+    <string name="time_saved">Reminder Saved</string>
+    <string name="confirm_delete">Do you really want to delete Reminder</string>
+    <string name="cancel">CANCEL</string>
+    <string name="caps_delete">DELETE</string>
+    <string name="caps_date">DATE</string>
+    <string name="caps_time">TIME</string>
+    <string name="format">Time in 24h Format</string>
+
+</resources>
