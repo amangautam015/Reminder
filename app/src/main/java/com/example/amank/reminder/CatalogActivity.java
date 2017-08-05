@@ -1,6 +1,9 @@
 package com.example.amank.reminder;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
@@ -101,5 +104,23 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private void deleteAllTime() {
         int rowsDeleted = getContentResolver().delete(TimeEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from reminder database");
+        if(rowsDeleted!=-1){
+            deleteAllAlarms();
+        }
+    }
+    public  void deleteAllAlarms(){
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+
+        Intent updateServiceIntent = new Intent(this ,AlertReceiver.class);
+
+        PendingIntent pendingUpdateIntent = PendingIntent.getService(this, 0, updateServiceIntent, 0);
+
+        // Cancel alarms
+        try {
+            alarmManager.cancel(pendingUpdateIntent);
+        } catch (Exception e) {
+            Log.e("XXX", "AlarmManager update was not canceled. " + e.toString());
+        }
     }
 }
+

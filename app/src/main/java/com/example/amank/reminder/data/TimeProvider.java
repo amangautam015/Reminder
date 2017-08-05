@@ -195,7 +195,15 @@ public class TimeProvider extends ContentProvider {
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        // Return the number of rows updated
+        if(rowsUpdated==0){
+            rowsUpdated = -1;
+        }
+        else {
+            // Turn Rows Updated to row ID.
+            String l = String.valueOf(ContentUris.parseId(uri));
+            rowsUpdated = Integer.parseInt(l);
+        }
+        // Return the number of ID rows updated
         return rowsUpdated;
     }
 

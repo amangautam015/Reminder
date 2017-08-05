@@ -1,15 +1,20 @@
 package com.example.amank.reminder;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.icu.util.Calendar;
+import android.icu.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,15 +35,24 @@ import android.widget.Toast;
 
 import com.example.amank.reminder.data.TimeDbHelper;
 import com.example.amank.reminder.data.TimeContract.TimeEntry;
+
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 /**
  * Created by amank on 3/8/17.
  */
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,View.OnClickListener {
     private TimeDbHelper mDbHelper;
+    int i=0,l;
+    Uri headAche;
     private EditText mNameEditText;
-
-
+    String shourOfDay,minutesOfDay,sDate,sYear,sMonth;
+    long presentTime,alertTime;
     private EditText txtTime;
     private int mYear, mMonth, mDay, mHour, mMinute;
     private String cDate, cTime;
@@ -59,6 +73,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+        JodaTimeAndroid.init(this);
         Intent intent = getIntent();
         mCurrentTimeUri = intent.getData();
         if (mCurrentTimeUri == null) {
@@ -137,7 +152,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
-    private void savePet() {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void saveTime() {
 
         String name = mNameEditText.getText().toString().trim();
         String date = txtDate.getText().toString().trim();
@@ -174,6 +190,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         if (mCurrentTimeUri == null) {
             Uri newUri = getContentResolver().insert(TimeEntry.CONTENT_URI, values);
+            headAche = newUri;
             if (newUri == null) {
                 Toast.makeText(this, getString(R.string.unable_toSave_time),
                         Toast.LENGTH_SHORT).show();
@@ -182,17 +199,34 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.time_saved),
                         Toast.LENGTH_SHORT).show();
             }
-        } else {
+
+        }
+        // UPPADTE TIME
+        else {
             int rowsAffected = getContentResolver().update(mCurrentTimeUri, values, null, null);
-            if (rowsAffected == 0) {
+            if (rowsAffected == -1) {
 
                 Toast.makeText(this, getString(R.string.unable_toSave_time),
                         Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this,getString(R.string.time_saved),
                         Toast.LENGTH_SHORT).show();
+              // headAche =  ContentUris.withAppendedId(headAche, rowsAffected);
+                l = rowsAffected;
+                cDate = txtDate.getText().toString();
+                cTime = txtTime.getText().toString();
             }
         }
+        String DateString = cDate  +  " " + cTime;
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
+        DateTime dt = formatter.parseDateTime(DateString);
+        presentTime = dt.getMillis();
+     //   long k= ContentUris.parseId(headAche);
+        alertTime = presentTime - System.currentTimeMillis();
+     //   String k2=""+k;
+     //   int k1=Integer.parseInt(k2);
+        setAlarm(alertTime,l,name);
+        i++;
         //Navigate back toCatalog acivity
         Intent intent = new Intent(EditorActivity.this, CatalogActivity.class);
         startActivity(intent);
@@ -200,6 +234,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
@@ -207,7 +242,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save pets from user input
-                savePet();
+
+                    saveTime();
+
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -342,9 +379,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
+                            if(monthOfYear<10){
+                                sMonth = "0" + (monthOfYear+1);
+                            }
+                            else{
+                                sMonth = "" + (monthOfYear+1);
+                            }
+                            if(dayOfMonth<10){
+                                sDate = "0"  + dayOfMonth;
+                            }
+                            else {
+                                sDate = "" + dayOfMonth;
+                            }
+                            sYear = "" + year;
+                            cDate = sDate+"-"+sMonth+"-"+sYear;
+                            txtDate.setText(cDate);
 
-                            txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
-                            cDate=dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
                         }
                     }, mYear, mMonth, mDay);
 
@@ -365,8 +415,24 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
 
-                            txtTime.setText(hourOfDay + ":" + minute);
-                            cTime=hourOfDay + ":" + minute;
+
+                            if(hourOfDay<10){
+                                 shourOfDay  = "0" + hourOfDay;
+                            }
+                            else{
+                                 shourOfDay = "" + hourOfDay;
+                            }
+                            if(minute<10){
+                                minutesOfDay = "0" + minute;
+
+                            }
+                            else {
+
+                                minutesOfDay = ""  +  minute;
+                            }
+
+                            cTime=shourOfDay+":"+minutesOfDay;
+                            txtTime.setText(cTime);
                         }
                     }, mHour, mMinute, false);
             timePickerDialog.show();
@@ -384,13 +450,42 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_Time_failed),
                         Toast.LENGTH_SHORT).show();
+
             } else {
+
                 // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_delete_Time_successful),
                         Toast.LENGTH_SHORT).show();
+                long k = ContentUris.parseId(mCurrentTimeUri);
+                String k1  = "" + k;
+                int k2 = Integer.parseInt(k1);
+                deleteAlarm(k2);
             }
             // Close the activity
             finish();
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void setAlarm(long ltime,int id,String name ){
+        Long alertTime = new GregorianCalendar().getTimeInMillis()+ltime;
+        Intent alertIntent = new Intent(this,AlertReceiver.class);
+
+        alertIntent.putExtra("EXTRA_SESSION_ID", id);
+        alertIntent.putExtra("MESSAGE",name );
+        AlarmManager alarmManager =(AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        //   PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alertIntent, 0);
+
+        alarmManager.set(AlarmManager.RTC_WAKEUP,alertTime, PendingIntent.getBroadcast(this,id,alertIntent,PendingIntent.FLAG_UPDATE_CURRENT));
+        //alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5000,
+        //         pendingIntent);
+    }
+    public void deleteAlarm(int id){
+        Intent alertIntent = new Intent(this,AlertReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this,id,alertIntent,0);
+        AlarmManager alarmManager =(AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pi);
+
+    }
+
 }
+
