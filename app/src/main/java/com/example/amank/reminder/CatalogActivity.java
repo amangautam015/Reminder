@@ -1,6 +1,6 @@
 package com.example.amank.reminder;
 /*
-* Designed By AmanK
+* Designed By AmanK.
 * */
 import android.app.AlarmManager;
 import android.app.PendingIntent;
