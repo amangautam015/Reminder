@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-
+/*
+* CUSTOMIZE YOUR NOTIFICATION
+* */
 public class AlertReceiver extends BroadcastReceiver {
     String name1 ;
     int itd;

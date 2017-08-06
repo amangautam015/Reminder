@@ -489,6 +489,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         //alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5000,
         //         pendingIntent);
     }
+    //DELETE SINGLE ALARM
     public void deleteAlarm(int id){
         Intent alertIntent = new Intent(this,AlertReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this,id,alertIntent,0);
