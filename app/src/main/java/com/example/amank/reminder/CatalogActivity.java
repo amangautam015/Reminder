@@ -30,7 +30,6 @@ import java.util.ArrayList;
 
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int REMINDER_LOADER= 0;
-    Cursor cursor1;
     ArrayList<Integer> IntegerArray = new ArrayList<Integer>();
     TimeCursorAdapter mCursorAdapter;
     private TimeDbHelper mDbHelper;

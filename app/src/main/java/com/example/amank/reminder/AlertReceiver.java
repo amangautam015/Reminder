@@ -33,10 +33,10 @@ public class AlertReceiver extends BroadcastReceiver {
         PendingIntent notificationIntent = PendingIntent.getActivity(context, itd,
                 new Intent(context, CatalogActivity.class), itd);
         NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle(msg)
-                .setTicker(msgAlert)
-                .setContentText(msgText);
+                .setSmallIcon(R.drawable.notification_icon)  //ICON
+                .setContentTitle(msg) //MEESAGE IN TITLE
+                .setTicker(msgAlert)   //WHEN NOTIFACTION  ISN'T EXPANDED
+                .setContentText(msgText); //TEXT EXPLAINIATION
         mBuilder.setContentIntent(notificationIntent);
         mBuilder.setDefaults(NotificationCompat.DEFAULT_VIBRATE);
         //mBuilder.setAutoCancel(true);
