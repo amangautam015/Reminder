@@ -4,7 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.example.amank.reminder.data.TimeContract.TimeEntry;
-
+/*
+* Designed By AmanK
+* */
 public class TimeDbHelper extends SQLiteOpenHelper {
     public static final String LOG_TAG = TimeDbHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "reminder.db";

@@ -1,5 +1,7 @@
 package com.example.amank.reminder;
-
+/*
+* Designed By AmanK
+* */
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
