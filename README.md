@@ -1,2 +1,2 @@
 # Reminder
-Still under development
+Simple Alarm App
