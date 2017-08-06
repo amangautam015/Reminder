@@ -202,6 +202,7 @@ public class TimeProvider extends ContentProvider {
             // Turn Rows Updated to row ID.
             String l = String.valueOf(ContentUris.parseId(uri));
             rowsUpdated = Integer.parseInt(l);
+            Log.e("updateTimeProvider", "" + rowsUpdated);
         }
         // Return the number of ID rows updated
         return rowsUpdated;

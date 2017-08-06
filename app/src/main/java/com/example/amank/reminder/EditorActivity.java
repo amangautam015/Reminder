@@ -24,6 +24,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -191,6 +192,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (mCurrentTimeUri == null) {
             Uri newUri = getContentResolver().insert(TimeEntry.CONTENT_URI, values);
             headAche = newUri;
+
             if (newUri == null) {
                 Toast.makeText(this, getString(R.string.unable_toSave_time),
                         Toast.LENGTH_SHORT).show();
@@ -198,6 +200,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             } else {
                 Toast.makeText(this, getString(R.string.time_saved),
                         Toast.LENGTH_SHORT).show();
+                long l1 = ContentUris.parseId(headAche);
+                String l11 = String.valueOf(l1);
+                l = Integer.parseInt(l11);
+                Log.e("EditorInsterR",""+l);
             }
 
         }
@@ -213,8 +219,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
               // headAche =  ContentUris.withAppendedId(headAche, rowsAffected);
                 l = rowsAffected;
+                Log.e("EditorInsterR",""+l);
                 cDate = txtDate.getText().toString();
                 cTime = txtTime.getText().toString();
+                deleteAlarm(rowsAffected);
             }
         }
         String DateString = cDate  +  " " + cTime;
@@ -469,7 +477,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public void setAlarm(long ltime,int id,String name ){
         Long alertTime = new GregorianCalendar().getTimeInMillis()+ltime;
         Intent alertIntent = new Intent(this,AlertReceiver.class);
-
+        Log.e("SETALARM",""+id);
         alertIntent.putExtra("EXTRA_SESSION_ID", id);
         alertIntent.putExtra("MESSAGE",name );
         AlarmManager alarmManager =(AlarmManager)getSystemService(Context.ALARM_SERVICE);
@@ -484,6 +492,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         PendingIntent pi = PendingIntent.getBroadcast(this,id,alertIntent,0);
         AlarmManager alarmManager =(AlarmManager)getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pi);
+        Log.e("DELETESINGLE",""+id);
 
     }
 

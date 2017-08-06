@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.app.LoaderManager;
@@ -23,8 +24,12 @@ import android.widget.ListView;
 import com.example.amank.reminder.data.TimeContract.TimeEntry;
 import com.example.amank.reminder.data.TimeDbHelper;
 
+import java.util.ArrayList;
+
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final int REMINDER_LOADER= 0;
+    Cursor cursor1;
+    ArrayList<Integer> IntegerArray = new ArrayList<Integer>();
     TimeCursorAdapter mCursorAdapter;
     private TimeDbHelper mDbHelper;
     ListView timeListView;
@@ -75,6 +80,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             // Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
                 deleteAllTime();
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -102,25 +108,62 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         mCursorAdapter.swapCursor(null);
     }
     private void deleteAllTime() {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String[] projection = {
+                TimeEntry._ID,
+                TimeEntry.COLUMN_REMINDER_NAME,
+                TimeEntry.COLUMN_REMINDER_TIME,
+                TimeEntry.COLUMN_REMINDER_DATE,
+                };
+
+        // Perform a query on the Times table
+        Cursor cursor1 = db.query(
+                TimeEntry.TABLE_NAME,   // The table to query
+                projection,            // The columns to return
+                null,                  // The columns for the WHERE clause
+                null,                  // The values for the WHERE clause
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);                   // The sort order
+        int i=0;
+   try {
+
+       while (cursor1.moveToNext()) {
+
+           int id = cursor1.getInt(cursor1.getColumnIndex(TimeEntry._ID));
+
+           IntegerArray.add(id);
+           Log.e("cursorDELETECATALOG K1", "" + id);
+
+       }
+   }
+   finally {
+       cursor1.close();
+   }
         int rowsDeleted = getContentResolver().delete(TimeEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from reminder database");
         if(rowsDeleted!=-1){
             deleteAllAlarms();
         }
+
     }
     public  void deleteAllAlarms(){
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
-        Intent updateServiceIntent = new Intent(this ,AlertReceiver.class);
 
-        PendingIntent pendingUpdateIntent = PendingIntent.getService(this, 0, updateServiceIntent, 0);
 
-        // Cancel alarms
-        try {
-            alarmManager.cancel(pendingUpdateIntent);
-        } catch (Exception e) {
-            Log.e("XXX", "AlarmManager update was not canceled. " + e.toString());
+
+
+        for (int id : IntegerArray) {
+            Intent alertIntent = new Intent(this,AlertReceiver.class);
+            PendingIntent pi = PendingIntent.getBroadcast(this,id,alertIntent,0);
+            AlarmManager alarmManager =(AlarmManager)getSystemService(Context.ALARM_SERVICE);
+            Log.e("DELEETEALLIDD K1", "" + id);
+            alarmManager.cancel(pi);
         }
+
+
+
+
     }
 }
 
